@@ -494,11 +494,11 @@ var Hyperlapse = function(container, params) {
 		_ctime = Date.now();
 		_dtime += _ctime - ptime;
 
-		//Take loop out due to way sky will show the demo 
-		// if(_dtime >= self.millis) {
-		// 	if(_is_playing) loop();
-		// 	_dtime = 0;
-		// }
+		Take loop out due to way sky will show the demo
+		if(_dtime >= self.millis) {
+			if(_is_playing) loop();
+			_dtime = 0;
+		}
 
 		requestAnimationFrame( animate );
 		render();
@@ -511,14 +511,15 @@ var Hyperlapse = function(container, params) {
 		if(_forward) {
 			if(++_point_index == _h_points.length) {
 				_point_index = _h_points.length-1;
-				_forward = !_forward;
-			}
-		} else {
-			if(--_point_index == -1) {
-				_point_index = 0;
-				_forward = !_forward;
+				// _forward = !_forward;
 			}
 		}
+		// else {
+		// 	if(--_point_index == -1) {
+		// 		_point_index = 0;
+		// 		_forward = !_forward;
+		// 	}
+		// }
 	};
 
 
