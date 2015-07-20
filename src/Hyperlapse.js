@@ -282,6 +282,9 @@ var Hyperlapse = function(container, params) {
 				if(results) {
 					for(i=0; i<_h_points.length; i++) {
 						_h_points[i].elevation = results[i].elevation;
+
+						console.log('Loading elevation ' + results[i].elevation);
+
 					}
 				} else {
 					for(i=0; i<_h_points.length; i++) {
@@ -800,10 +803,7 @@ var Hyperlapse = function(container, params) {
 	// */
 	this.resetFrames = function() {
 		self.pause();
-
-
 			_point_index=0;
 			drawMaterial();
-
 	};
 };

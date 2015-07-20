@@ -10,9 +10,16 @@
 	<script src="js/GSVPano.js"></script>
 	<script src="../src/Hyperlapse.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="js/d3.v3.js"></script>
+	<script src="js/rickshaw.min.js"></script>
 	<script>
 
+
+
+
 	$(function(){
+
+
 
 		var start_point = new google.maps.LatLng(44.3431,6.783936);
 		var end_point = new google.maps.LatLng(44.340578,6.782684);
@@ -149,7 +156,8 @@
 				use_lookat: false,
 				distance_between_points: 5,
 				max_points: 1000,
-				elevation: _elevation
+				elevation: _elevation,
+				use_elevation:true
 			});
 
 
@@ -172,6 +180,34 @@
 				directions_renderer.setDirections(e.response);
 				show( "Number of Points: "+ hyperlapse.length() );
 				hyperlapse.load();
+
+
+
+				var arrayCount=0;
+var reformattedArray = e.points.map(function(obj){
+   var rObj = {};
+	 rObj.x = arrayCount;
+   rObj.y = obj.elevation;
+	 arrayCount++;
+   return rObj;
+});
+
+				var graph = new Rickshaw.Graph( {
+					element: document.querySelector("#chart"),
+					width: $('#chart').width(),
+					height: 120,
+					min:'auto',
+					series: [{
+							color: 'steelblue',
+							data: reformattedArray
+					}]
+			});
+
+			graph.render();
+
+
+
+
 			};
 
 			hyperlapse.onLoadProgress = function(e) {
@@ -438,16 +474,20 @@
 	<div id="pano" style="position: absolute; left: 0; top: 0; right: 0; bottom: 120px; z-index:-1;"></div>
 	<div id="controls">
 		<div id="map" style="width: 400px; height: 300px; float: left; padding: 0;"></div>
+
 		<div id="controls" style="">
 			<!-- <form id="map_form">
 				<input type="text" name="address" id="address" />
 				<button type="submit" id="searchButton" >Search</button>
 			</form> -->
+
 		</div>
 
 
 	</div>
-	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;width: 100%; height: 120px; z-index:-1; "></div>
 
+
+	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;left:0;width: 50%; height: 120px; z-index:-1; "></div>
+  <div id="chart" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;right:0;width: 50%; height: 120px; z-index:-1; "></div>
 </body>
 </html>
