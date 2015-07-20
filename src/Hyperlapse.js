@@ -493,10 +493,12 @@ var Hyperlapse = function(container, params) {
 		var ptime = _ctime;
 		_ctime = Date.now();
 		_dtime += _ctime - ptime;
-		if(_dtime >= self.millis) {
-			if(_is_playing) loop();
-			_dtime = 0;
-		}
+
+		//Take loop out due to way sky will show the demo 
+		// if(_dtime >= self.millis) {
+		// 	if(_is_playing) loop();
+		// 	_dtime = 0;
+		// }
 
 		requestAnimationFrame( animate );
 		render();
