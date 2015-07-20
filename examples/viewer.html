@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html> 
-<head> 
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
-	<title>Viewer Example</title> 
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<title>Viewer Example</title>
 
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script> 
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
 	<script src="js/dat.gui.min.js"></script>
 	<script src="js/three.min.js"></script>
 	<script src="js/GSVPano.js"></script>
 	<script src="../src/Hyperlapse.js"></script>
-	<script> 
-	
+	<script>
+
 		var start_point = new google.maps.LatLng(44.3431,6.783936);
 		var end_point = new google.maps.LatLng(44.340578,6.782684);
 		var lookat_point = new google.maps.LatLng(44.34232747290594, 6.786460550292986);
@@ -31,7 +31,7 @@
 				lookat_point = new google.maps.LatLng(parts[2], parts[3]);
 				end_point = new google.maps.LatLng(parts[4], parts[5]);
 				_elevation = parts[6] || 0;
-			} 
+			}
 
 			/* Map */
 
@@ -50,7 +50,7 @@
 					+ _elevation;
 			}
 
-			var mapOpt = { 
+			var mapOpt = {
 				mapTypeId: google.maps.MapTypeId.ROADMAP,
 				center: start_point,
 				zoom: 15
@@ -139,17 +139,17 @@
 			var hyperlapse = new Hyperlapse(pano, {
 				lookat: lookat_point,
 				fov: 80,
-				millis: 50,
+				millis: 200,
 				width: window.innerWidth,
 				height: window.innerHeight,
 				zoom: 2,
-				use_lookat: true,
+				use_lookat: false,
 				distance_between_points: 5,
-				max_points: 100,
+				max_points: 1000,
 				elevation: _elevation
 			});
-			
-			
+
+
 
 			hyperlapse.onError = function(e) {
 				show( "ERROR: "+ e.message );
@@ -177,17 +177,17 @@
 
 			hyperlapse.onLoadComplete = function(e) {
 				show( "" +
-					"Start: " + start_pin.getPosition().toString() + 
-					"<br>End: " + end_pin.getPosition().toString() + 
-					"<br>Lookat: " + pivot_pin.getPosition().toString() + 
+					"Start: " + start_pin.getPosition().toString() +
+					"<br>End: " + end_pin.getPosition().toString() +
+					"<br>Lookat: " + pivot_pin.getPosition().toString() +
 					"<br>Ready." );
 			};
 
 			hyperlapse.onFrame = function(e) {
 				show( "" +
-					"Start: " + start_pin.getPosition().toString() + 
-					"<br>End: " + end_pin.getPosition().toString() + 
-					"<br>Lookat: " + pivot_pin.getPosition().toString() + 
+					"Start: " + start_pin.getPosition().toString() +
+					"<br>End: " + end_pin.getPosition().toString() +
+					"<br>Lookat: " + pivot_pin.getPosition().toString() +
 					"<br>Position: "+ (e.position+1) +" of "+ hyperlapse.length() );
 				camera_pin.setPosition(e.point.location);
 			};
@@ -228,25 +228,25 @@
 				//hyperlapse.position.y = py;
 			}, false );
 
-			
+
 
 			/* Dat GUI */
 
 			var gui = new dat.GUI();
 
 			var o = {
-				distance_between_points:10, 
-				max_points:100, 
-				fov: 80, 
-				elevation:Math.floor(_elevation), 
-				tilt:0, 
-				millis:50, 
+				distance_between_points:5,
+				max_points:1000,
+				fov: 80,
+				elevation:Math.floor(_elevation),
+				tilt:0,
+				millis:50,
 				offset_x:0,
 				offset_y:0,
 				offset_z:0,
 				position_x:0,
 				position_y:0,
-				use_lookat:true,
+				use_lookat:false,
 				screen_width: window.innerWidth,
 				screen_height: window.innerHeight,
 				generate:function(){
@@ -261,13 +261,13 @@
 					}
 
 					request = {
-						origin: start_point, 
-						destination: end_point, 
+						origin: start_point,
+						destination: end_point,
 						travelMode: google.maps.DirectionsTravelMode.DRIVING
 					};
 
 					directions_service.route(request, function(response, status) {
-						if (status == google.maps.DirectionsStatus.OK) {   
+						if (status == google.maps.DirectionsStatus.OK) {
 							hyperlapse.generate({route: response});
 						} else {
 							console.log(status);
@@ -314,7 +314,7 @@
 				hyperlapse.setDistanceBetweenPoint(value);
 			});
 
-			var max_points = parameters.add(o, 'max_points', 10, 300);
+			var max_points = parameters.add(o, 'max_points', 10, 1000);
 			max_points.onChange(function(value) {
 				hyperlapse.setMaxPoints(value);
 			});
@@ -331,7 +331,7 @@
 				changeHash();
 			});
 
-			var millis_control = parameters.add(o, 'millis', 10, 250);
+			var millis_control = parameters.add(o, 'millis', 10, 5000);
 			millis_control.onChange(function(value) {
 				hyperlapse.millis = value;
 			});
@@ -372,7 +372,7 @@
 			});
 
 			parameters.open();
-			
+
 
 			var play_controls = gui.addFolder('play controls');
 			play_controls.add(hyperlapse, 'play');
@@ -417,9 +417,9 @@
 		}
 
 		window.onload = init;
-	</script> 
-</head> 
-<body> 
+	</script>
+</head>
+<body>
 	<div id="pano" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index:-1;"></div>
 	<div id="controls">
 		<div id="map" style="width: 400px; height: 300px; float: left; padding: 0;"></div>
@@ -431,7 +431,7 @@
 		</div>
 		<div id="text" style="width: 500px; height: 120px; float: left; padding-top: 10px; z-index:0; border-style:solid; border-width:medium;"></div>
 	</div>
-	
-	
-</body> 
+
+
+</body>
 </html>
