@@ -9,7 +9,10 @@
 	<script src="js/three.min.js"></script>
 	<script src="js/GSVPano.js"></script>
 	<script src="../src/Hyperlapse.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script>
+
+	$(function(){
 
 		var start_point = new google.maps.LatLng(44.3431,6.783936);
 		var end_point = new google.maps.LatLng(44.340578,6.782684);
@@ -111,22 +114,22 @@
 				changeHash();
 			});
 
-			function findAddress(address) {
-				geocoder.geocode( { 'address': address}, function(results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						map.setCenter(results[0].geometry.location);
-						o.drop_pins();
-					} else {
-						show( "Geocode was not successful for the following reason: " + status );
-					}
-				});
-			}
+			// function findAddress(address) {
+			// 	geocoder.geocode( { 'address': address}, function(results, status) {
+			// 		if (status == google.maps.GeocoderStatus.OK) {
+			// 			map.setCenter(results[0].geometry.location);
+			// 			o.drop_pins();
+			// 		} else {
+			// 			show( "Geocode was not successful for the following reason: " + status );
+			// 		}
+			// 	});
+			// }
 
-			var search = document.getElementById( 'searchButton' );
-			search.addEventListener( 'click', function( event ) {
-				event.preventDefault();
-				findAddress( document.getElementById("address").value );
-			}, false );
+			// var search = document.getElementById( 'searchButton' );
+			// search.addEventListener( 'click', function( event ) {
+			// 	event.preventDefault();
+			// 	findAddress( document.getElementById("address").value );
+			// }, false );
 
 
 			/* Hyperlapse */
@@ -379,6 +382,7 @@
 			play_controls.add(hyperlapse, 'pause');
 			play_controls.add(hyperlapse, 'next');
 			play_controls.add(hyperlapse, 'prev');
+		  play_controls.add(hyperlapse, 'resetFrames');
 			play_controls.open();
 
 			gui.add(o, 'drop_pins');
@@ -416,22 +420,34 @@
 			o.generate();
 		}
 
-		window.onload = init;
+
+
+	window.onload = init;
+
+	});
+
+
+
+
 	</script>
+
+
+
 </head>
-<body>
-	<div id="pano" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index:-1;"></div>
+<body style="margin:0;">
+	<div id="pano" style="position: absolute; left: 0; top: 0; right: 0; bottom: 120px; z-index:-1;"></div>
 	<div id="controls">
 		<div id="map" style="width: 400px; height: 300px; float: left; padding: 0;"></div>
 		<div id="controls" style="">
-			<form id="map_form">
+			<!-- <form id="map_form">
 				<input type="text" name="address" id="address" />
 				<button type="submit" id="searchButton" >Search</button>
-			</form>
+			</form> -->
 		</div>
-		<div id="text" style="width: 500px; height: 120px; float: left; padding-top: 10px; z-index:0; border-style:solid; border-width:medium;"></div>
-	</div>
 
+
+	</div>
+	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;width: 100%; height: 120px; z-index:-1; "></div>
 
 </body>
 </html>
