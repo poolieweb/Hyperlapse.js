@@ -10,8 +10,10 @@
 	<script src="js/GSVPano.js"></script>
 	<script src="../src/Hyperlapse.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="js/d3.v3.js"></script>
-	<script src="js/rickshaw.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+	<link href="css/nv.d3.css" rel="stylesheet">
+	<script src="js/nv.d3.js"></script>
 	<script>
 
 
@@ -184,26 +186,42 @@
 
 
 				var arrayCount=0;
-var reformattedArray = e.points.map(function(obj){
-   var rObj = {};
-	 rObj.x = arrayCount;
-   rObj.y = obj.elevation;
-	 arrayCount++;
-   return rObj;
+				var reformattedArray = e.points.map(function(obj){
+				   var rObj = {};
+					 rObj.x = arrayCount;
+				   rObj.y = +obj.elevation.toFixed(1);;
+					 arrayCount++;
+				   return rObj;
+				});
+
+
+
+				// Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
+var chart;
+var data;
+
+nv.addGraph(function() {
+		chart = nv.models.lineChart()
+				.options({
+						transitionDuration: 300,
+						useInteractiveGuideline: true
+				});
+		// chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+		chart.xAxis.axisLabel("Frames");
+		chart.yAxis.axisLabel('Height M');
+
+    chart.showLegend(false);
+
+		d3.select('#chart').append('svg')
+				.datum([
+						{
+								values: reformattedArray
+						}])
+				.call(chart);
+		nv.utils.windowResize(chart.update);
+		return chart;
 });
 
-				var graph = new Rickshaw.Graph( {
-					element: document.querySelector("#chart"),
-					width: $('#chart').width(),
-					height: 120,
-					min:'auto',
-					series: [{
-							color: 'steelblue',
-							data: reformattedArray
-					}]
-			});
-
-			graph.render();
 
 
 
@@ -410,6 +428,8 @@ var reformattedArray = e.points.map(function(obj){
 				hyperlapse.use_lookat = value;
 			});
 
+
+
 			parameters.open();
 
 
@@ -419,10 +439,18 @@ var reformattedArray = e.points.map(function(obj){
 			play_controls.add(hyperlapse, 'next');
 			play_controls.add(hyperlapse, 'prev');
 		  play_controls.add(hyperlapse, 'resetFrames');
+
 			play_controls.open();
 
 			gui.add(o, 'drop_pins');
-			gui.add(o, 'generate');
+
+			var generate =gui.add(o, 'generate');
+			generate.onChange(function(value) {
+			    $('#Chart').empty();
+
+
+			});
+
 			gui.add(hyperlapse, 'load');
 
 
@@ -487,7 +515,7 @@ var reformattedArray = e.points.map(function(obj){
 	</div>
 
 
-	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;left:0;width: 50%; height: 120px; z-index:-1; "></div>
-  <div id="chart" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;right:0;width: 50%; height: 120px; z-index:-1; "></div>
+	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:120px;left:0;right:0;width: 100%; height: 120px; z-index:-1; "></div>
+  <div id="chart" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;right:0;left:0;width: 100%; height: 120px; z-index:-1; "></div>
 </body>
 </html>
