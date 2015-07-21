@@ -153,7 +153,7 @@
 				fov: 80,
 				millis: 200,
 				width: window.innerWidth,
-				height: window.innerHeight,
+				height: window.innerHeight - 150,
 				zoom: 2,
 				use_lookat: false,
 				distance_between_points: 5,
@@ -197,31 +197,39 @@
 
 
 				// Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
-var chart;
-var data;
+				var chart;
+				var data;
 
-nv.addGraph(function() {
-		chart = nv.models.lineChart()
-				.options({
-						transitionDuration: 300,
-						useInteractiveGuideline: true
+
+
+				nv.addGraph(function() {
+						chart = nv.models.lineChart()
+								.options({
+										transitionDuration: 300,
+										useInteractiveGuideline: true
+								});
+						// chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+						chart.xAxis.axisLabel("Frames");
+						chart.yAxis.axisLabel('Height M');
+
+						chart.lines.dispatch.on("elementClick", function(e) {
+								console.log(e[0].pointIndex);
+
+								hyperlapse.gotoFrame(e[0].pointIndex);
+						});
+
+
+				    chart.showLegend(false);
+
+						d3.select('#chart').append('svg')
+								.datum([
+										{
+												values: reformattedArray
+										}])
+								.call(chart);
+						nv.utils.windowResize(chart.update);
+						return chart;
 				});
-		// chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
-		chart.xAxis.axisLabel("Frames");
-		chart.yAxis.axisLabel('Height M');
-
-    chart.showLegend(false);
-
-		d3.select('#chart').append('svg')
-				.datum([
-						{
-								values: reformattedArray
-						}])
-				.call(chart);
-		nv.utils.windowResize(chart.update);
-		return chart;
-});
-
 
 
 
@@ -233,21 +241,27 @@ nv.addGraph(function() {
 			};
 
 			hyperlapse.onLoadComplete = function(e) {
-				show( "" +
-					"Start: " + start_pin.getPosition().toString() +
-					"<br>End: " + end_pin.getPosition().toString() +
-					"<br>Lookat: " + pivot_pin.getPosition().toString() +
-					"<br>Ready." );
+				show( "<br>Ready." );
 			};
 
 			hyperlapse.onFrame = function(e) {
-				show( "" +
-					"Start: " + start_pin.getPosition().toString() +
-					"<br>End: " + end_pin.getPosition().toString() +
-					"<br>Lookat: " + pivot_pin.getPosition().toString() +
-					"<br>Position: "+ (e.position+1) +" of "+ hyperlapse.length() );
+				show(
+					"Position: "+ (e.position+1) +" of "+ hyperlapse.length() );
 				camera_pin.setPosition(e.point.location);
-			};
+
+
+				// removeClass
+				$('.nv-point').attr('class', function(index, classNames) {
+						return classNames.replace('hover', '');
+				});
+
+				// addClass
+				$('.nv-point-' + (e.position)).attr('class', function(index, classNames) {
+				    return classNames + ' hover';
+				});
+
+
+			}
 
 			pano.addEventListener( 'mousedown', function(e){
 				e.preventDefault();
@@ -305,7 +319,7 @@ nv.addGraph(function() {
 				position_y:0,
 				use_lookat:false,
 				screen_width: window.innerWidth,
-				screen_height: window.innerHeight,
+				screen_height: window.innerHeight - 150,
 				generate:function(){
 					show( "Generating route..." );
 
@@ -362,7 +376,7 @@ nv.addGraph(function() {
 
 			var scn = gui.addFolder('screen');
 			scn.add(o, 'screen_width', window.innerHeight).listen();
-			scn.add(o, 'screen_height', window.innerHeight).listen();
+			scn.add(o, 'screen_height', window.innerHeight - 150).listen();
 
 			var parameters = gui.addFolder('parameters');
 
@@ -455,9 +469,9 @@ nv.addGraph(function() {
 
 
 			window.addEventListener('resize', function(){
-				hyperlapse.setSize(window.innerWidth, window.innerHeight);
+				hyperlapse.setSize(window.innerWidth, window.innerHeight -150);
 				o.screen_width = window.innerWidth;
-				o.screen_height = window.innerHeight;
+				o.screen_height = window.innerHeight - 150;
 			}, false);
 
 			var show_ui = true;
@@ -499,7 +513,7 @@ nv.addGraph(function() {
 
 </head>
 <body style="margin:0;">
-	<div id="pano" style="position: absolute; left: 0; top: 0; right: 0; bottom: 120px; z-index:-1;"></div>
+	<div id="pano" style="background-color:black;position: absolute; left: 0; top: 0; right: 0; bottom: 150px; z-index:-1;"></div>
 	<div id="controls">
 		<div id="map" style="width: 400px; height: 300px; float: left; padding: 0;"></div>
 
@@ -515,7 +529,7 @@ nv.addGraph(function() {
 	</div>
 
 
-	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:120px;left:0;right:0;width: 100%; height: 120px; z-index:-1; "></div>
+	<div id="text" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:120px;left:0;right:0;width: 100%; height: 30px; z-index:-1; "></div>
   <div id="chart" style="font-family: Helvetica; font-size:14pt; padding-top:5px; background-color:black; color:#0070a5; position: absolute;bottom:0;right:0;left:0;width: 100%; height: 120px; z-index:-1; "></div>
 </body>
 </html>

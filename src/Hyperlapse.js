@@ -514,7 +514,8 @@ var Hyperlapse = function(container, params) {
 		if(_forward) {
 			if(++_point_index == _h_points.length) {
 				_point_index = _h_points.length-1;
-				// _forward = !_forward;
+				_is_playing = false;
+				handlePause({});
 			}
 		}
 		// else {
@@ -806,4 +807,15 @@ var Hyperlapse = function(container, params) {
 			_point_index=0;
 			drawMaterial();
 	};
+
+	// /**
+	// * goto  frame in sequence
+	// * @fires Hyperlapse#onGoto
+	// */
+	this.gotoFrame = function(frame) {
+		self.pause();
+			_point_index=frame;
+			drawMaterial();
+	};
+
 };
