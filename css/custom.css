@@ -1,0 +1,102 @@
+body{
+  margin:0;
+}
+
+#pano{
+  background-color:black;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index:-1;
+}
+
+#map{
+  height: 400px;
+  width: 450px;
+  overflow:hidden;
+  position: absolute;
+  z-index:999;
+  opacity: 0.8;
+}
+
+#mapSize{
+  width:20px;
+  height:20px;
+  left:430px;
+  top:368px;
+  overflow:hidden;
+  position: absolute;
+  z-index:999;
+  cursor:pointer;
+  color: #0070a5;
+}
+
+#mapSize.slided{
+  left:20px;
+  top:20px;
+}
+
+#text{
+  font-family: Helvetica;
+  font-size:14pt;
+  padding-top:5px;
+  color:#0070a5;
+  position: absolute;
+  bottom:120px;
+  left:0;
+  right:0;
+  width: 100%;
+  height: 30px;
+  z-index:-1;
+  opacity: 0.5;
+  }
+
+#chart{
+  font-family: Helvetica;
+  font-size:14pt;
+  padding-top:5px;
+  background-color:black;
+  color:#0070a5;
+  position: absolute;
+  bottom:0;
+  right:0;
+  left:0;
+  width: 100%;
+  height: 120px;
+  z-index:-1;
+  opacity: 0.4;
+  }
+
+#videoControls{
+
+  overflow:hidden;
+  position: absolute;
+  z-index:999;
+  cursor:pointer;
+  color: #0070a5;
+  opacity: 0.4;
+   left: 50%;
+   width:16em;
+   bottom: 160px;
+   margin-left: -8em; /*set to a negative number 1/2 of your width*/*/
+
+}
+
+#videoControls:hover{
+  opacity: 0.8;
+}
+
+#videoControls .pause{
+  display: none;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
