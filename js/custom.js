@@ -198,24 +198,82 @@ $(function () {
             show("Number of Points: " + hyperlapse.length());
             hyperlapse.load();
 
-
             var arrayCount = 0;
-            var reformattedArray = e.points.map(function (obj) {
+            var baseData = e.points.map(function (obj) {
                 var rObj = {};
-                rObj.x = arrayCount;
-                rObj.y = +obj.elevation.toFixed(1);
-                ;
+                rObj.frame = arrayCount;
+                rObj.elevation = +obj.elevation.toFixed(1);
+                rObj.location = obj.location;
                 arrayCount++;
                 return rObj;
             });
+
+
+            var altData =  JSON.parse(JSON.stringify(baseData));
+
+
+
+
+            for(i=0; i<altData.length; i++) {
+
+                if(i==0){
+
+                    altData[i].y = altData[i].elevation;
+                    //slopetData[i].y = '';
+
+                    altData[i].x = 0;
+                    //slopetData[i].x = 0;
+                }else
+                {
+
+                    var dist = google.maps.geometry.spherical.computeDistanceBetween(
+                            altData[i].location,
+                            altData[i-1].location) + altData[i - 1].x;
+
+
+                    altData[i].y = altData[i].elevation;
+                    altData[i].x = +dist.toFixed(1);
+
+                }
+            }
+
+            var slopeData =  JSON.parse(JSON.stringify(baseData));
+
+            for(i=0; i<slopeData.length; i++) {
+
+                if(i==0){
+
+
+                    slopeData[i].y = '';
+                    slopeData[i].x = 0;
+                }else
+                {
+
+                    var dist = google.maps.geometry.spherical.computeDistanceBetween(
+                            slopeData[i].location,
+                            slopeData[i-1].location) + slopeData[i - 1].x;
+
+                    var change_in_height =  slopeData[i].elevation - slopeData[i -1].elevation;
+
+                    var slope =  change_in_height / dist;
+
+                    slopeData[i].y = slope;
+                    slopeData[i].x = dist;
+                }
+            }
 
 
             // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
             var chart;
             var data;
 
+            d3.select("#chart svg").remove();
+            d3.select("#chart").html('');
 
             nv.addGraph(function () {
+
+
+
                 chart = nv.models.lineChart()
                     .options({
                         transitionDuration: 300,
@@ -224,6 +282,7 @@ $(function () {
                 // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
                 // chart.xAxis.axisLabel("Frames");
                 chart.yAxis.axisLabel('Height M');
+                chart.xAxis.axisLabel('Approx Distance');
 
                 chart.lines.dispatch.on("elementClick", function (e) {
                     console.log(e[0].pointIndex);
@@ -237,8 +296,12 @@ $(function () {
                 d3.select('#chart').append('svg')
                     .datum([
                         {
-                            values: reformattedArray
-                        }])
+                            values: altData
+                        }
+                        //, {
+                        //    values: slopeData
+                        //}
+                    ])
                     .call(chart);
                 nv.utils.windowResize(chart.update);
                 return chart;

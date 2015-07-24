@@ -92,6 +92,7 @@ var HyperlapsePoint = function(location, pano_id, params ) {
 	 */
 	this.image_date = params.image_date || "";
 
+
 };
 
 /**
@@ -426,6 +427,11 @@ var Hyperlapse = function(container, params) {
 				} else {
 					_raw_points.push(path[i]);
 				}
+			}
+
+			for(i=0; i<_raw_points.length; i++) {
+
+				console.log('Raw Point:' + _raw_points[i])
 			}
 
 			parsePoints(response);
