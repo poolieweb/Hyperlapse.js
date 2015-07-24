@@ -217,6 +217,7 @@ var Hyperlapse = function(container, params) {
 		_h_points[_point_index].image = canvas;
 
 		if(++_point_index != _h_points.length) {
+
 			handleLoadProgress( {position:_point_index} );
 
 			if(!_cancel_load) {
@@ -818,4 +819,13 @@ var Hyperlapse = function(container, params) {
 			drawMaterial();
 	};
 
+	// /**
+	// * last  frame in sequence
+	// * @fires Hyperlapse#onLast
+	// */
+	this.last = function() {
+		  self.pause();
+			_point_index= _h_points.length -1;
+			drawMaterial();
+	};
 };
