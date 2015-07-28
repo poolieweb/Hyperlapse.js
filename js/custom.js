@@ -79,7 +79,11 @@ $(function () {
                 start_pin.setPosition(result);
                 start_point = result;
                 changeHash();
+                if (window.confirm("Do you want to recalculate route?")) {
+                    o.generate();
+                }
             });
+
         });
 
         var signal_flag_checkered = 'images/signal_flag_checkered.png';
@@ -95,7 +99,11 @@ $(function () {
                 end_pin.setPosition(result);
                 end_point = result;
                 changeHash();
+                if (window.confirm("Do you want to recalculate route?")) {
+                    o.generate();
+                }
             });
+
         });
 
         $('#mapSize').on('click', function (e) {
@@ -249,16 +257,20 @@ $(function () {
                 }else
                 {
 
-                    var dist = google.maps.geometry.spherical.computeDistanceBetween(
+                    var totalDist = google.maps.geometry.spherical.computeDistanceBetween(
                             slopeData[i].location,
                             slopeData[i-1].location) + slopeData[i - 1].x;
+
+                    var dist = google.maps.geometry.spherical.computeDistanceBetween(
+                            slopeData[i].location,
+                            slopeData[i-1].location);
 
                     var change_in_height =  slopeData[i].elevation - slopeData[i -1].elevation;
 
                     var slope =  change_in_height / dist;
 
-                    slopeData[i].y = slope;
-                    slopeData[i].x = dist;
+                    slopeData[i].y = (slope*100).toFixed(1);
+                    slopeData[i].x = totalDist;
                 }
             }
 
@@ -270,9 +282,9 @@ $(function () {
             d3.select("#chart svg").remove();
             d3.select("#chart").html('');
 
+
+
             nv.addGraph(function () {
-
-
 
                 chart = nv.models.lineChart()
                     .options({
@@ -281,8 +293,25 @@ $(function () {
                     });
                 // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
                 // chart.xAxis.axisLabel("Frames");
-                chart.yAxis.axisLabel('Height M');
-                chart.xAxis.axisLabel('Approx Distance');
+
+
+                //chart.yAxis.axisLabel('Grad %');
+                var minValue = Math.min.apply(Math,slopeData.map(function(o){return o.y;}));
+                var maxValue = Math.max.apply(Math,slopeData.map(function(o){return o.y;}));
+                chart.forceY([minValue,maxValue])
+
+                chart.interpolate("basis");
+
+
+
+                chart.yAxis
+                    .tickFormat(function(d) { return d + ' %';});
+
+                chart.margin({top: 10, right: 25, bottom: 20, left: 70})
+
+                //chart.xAxis.axisLabel('Approx Distance');
+                chart.xAxis
+                    .tickFormat(function(d) { return (d/1000).toFixed(2) + ' km';});
 
                 chart.lines.dispatch.on("elementClick", function (e) {
                     console.log(e[0].pointIndex);
@@ -295,12 +324,13 @@ $(function () {
 
                 d3.select('#chart').append('svg')
                     .datum([
-                        {
-                            values: altData
-                        }
-                        //, {
-                        //    values: slopeData
+                        //{
+                        //    values: altData
                         //}
+                        //,
+                        {
+                            values: slopeData
+                        }
                     ])
                     .call(chart);
                 nv.utils.windowResize(chart.update);

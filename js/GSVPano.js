@@ -65,6 +65,8 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	this.composePanorama = function (panoId) {
 
+
+
 		this.setProgress(0);
 		console.log('Loading panorama for zoom ' + _zoom + '...');
 
@@ -96,7 +98,10 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	this.load = function (location, callback) {
 
+
 		console.log('Load for', location);
+
+
 		var self = this;
 		_panoClient.getPanoramaByLocation(location, 50, function (result, status) {
 			if (status === google.maps.StreetViewStatus.OK) {

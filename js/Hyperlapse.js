@@ -274,6 +274,9 @@ var Hyperlapse = function(container, params) {
  	 * @param {Array<HyperlapsePoint>} e.points
 	 */
 	var handleRouteComplete = function (e) {
+
+		console.groupEnd();
+		console.groupCollapsed("Loading elevation");
 		var elevations = [];
 		for(var i=0; i<_h_points.length; i++) {
 			elevations[i] = _h_points[i].location;
@@ -313,6 +316,9 @@ var Hyperlapse = function(container, params) {
 
 	var parsePoints = function(response) {
 
+
+
+
 		_loader.load( _raw_points[_point_index], function() {
 
 			if(_loader.id != _prev_pano_id) {
@@ -351,6 +357,8 @@ var Hyperlapse = function(container, params) {
 			}
 
 		} );
+
+
 	};
 
 	var getElevation = function(locations, callback) {
@@ -428,13 +436,19 @@ var Hyperlapse = function(container, params) {
 					_raw_points.push(path[i]);
 				}
 			}
-
+			console.groupCollapsed("Raw Points");
 			for(i=0; i<_raw_points.length; i++) {
 
 				console.log('Raw Point:' + _raw_points[i])
+
 			}
+			console.groupEnd();
+
+			console.groupCollapsed("Load Points");
 
 			parsePoints(response);
+
+
 
 		} else {
 			self.pause();
